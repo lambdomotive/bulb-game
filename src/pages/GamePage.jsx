@@ -18,6 +18,8 @@ function GamePage() {
 
   const [currentScore, setCurrentScore] = useState(0);
 
+  const [isDisplayingSequence, setIsDisplayingSequence] = useState(false);
+
   const [isError, setError] = useState(false);
 
   const [gameStatus, setGameStatus] = useState(false);
@@ -39,6 +41,7 @@ function GamePage() {
   }, [level]);
 
   useEffect(() => {
+    setIsDisplayingSequence(true);
     if (!gameStatus) return [];
     const step = 1000;
     const turnOffAfter = 400;
@@ -53,10 +56,12 @@ function GamePage() {
       }, currentTimeout);
       currentTimeout += step;
     }
+    setTimeout(() => setIsDisplayingSequence(false), currentTimeout);
   }, [gameStatus, levelSequence]);
 
   const handleBulbClick = useCallback(
     (bulbIndex) => {
+      if (isDisplayingSequence) return;
       if (levelSequence[correctClicks] === bulbIndex) {
         setCorrectClicks((prev) => prev + 1);
         setCurrentScore((prev) => prev + 10);
@@ -76,7 +81,7 @@ function GamePage() {
         }, 820);
       }
     },
-    [correctClicks, currentScore, dispatch, level, levelSequence]
+    [correctClicks, currentScore, dispatch, isDisplayingSequence, level, levelSequence]
   );
 
   return (
