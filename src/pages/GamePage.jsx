@@ -20,6 +20,8 @@ function GamePage() {
 
   const [isError, setError] = useState(false);
 
+  const [gameStatus, setGameStatus] = useState(false);
+
   const [currentHighlightedElement, setCurrentHightlightedElement] = useState(
     null
   );
@@ -37,6 +39,7 @@ function GamePage() {
   }, [level]);
 
   useEffect(() => {
+    if (!gameStatus) return [];
     const step = 1000;
     const turnOffAfter = 400;
     let currentTimeout = 1000;
@@ -50,7 +53,7 @@ function GamePage() {
       }, currentTimeout);
       currentTimeout += step;
     }
-  }, [levelSequence]);
+  }, [gameStatus, levelSequence]);
 
   const handleBulbClick = useCallback(
     (bulbIndex) => {
@@ -87,19 +90,25 @@ function GamePage() {
       </div>
       <div>Your best score: {bestScore.toString()}</div>
       <div>Your current score: {currentScore}</div>
-      <div className="bulbs">
-        {colors.map((color, index) => {
-          console.log("currentHighlightedElement: ", currentHighlightedElement);
-          return (
-            <SingleBulb
-              color={color}
-              onClick={handleBulbClick.bind(this, index)}
-              key={color}
-              highlight={index === currentHighlightedElement}
-            />
-          );
-        })}
-      </div>
+
+      {!gameStatus ? (
+        <button onClick={() => setGameStatus((prev) => !prev)}>
+          Start the game
+        </button>
+      ) : (
+        <div className="bulbs">
+          {colors.map((color, index) => {
+            return (
+              <SingleBulb
+                color={color}
+                onClick={handleBulbClick.bind(this, index)}
+                key={color}
+                highlight={index === currentHighlightedElement}
+              />
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
